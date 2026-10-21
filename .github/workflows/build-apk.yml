@@ -1,6 +1,6 @@
-name: Build Android APK
+name: Build Android APK (Flutter-installed)
 
-# Run it by hand: repo > Actions tab > "Build Android APK" > Run workflow
+# Run it by hand: repo > Actions tab > "Build Android APK (Flutter-installed)" > Run workflow
 on:
   workflow_dispatch:
 
@@ -19,13 +19,24 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.8"
+          channel: "stable"
+
       - name: Install Flet
         run: pip install "flet==1.0.4" "flet-cli==1.0.4"
 
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
+      - name: Verify Flutter and Android toolchain
+        run: flutter doctor -v
+
       - name: Build APK
+        env:
+          CI: "true"
         run: flet build apk --verbose
 
       - name: Show what was built
