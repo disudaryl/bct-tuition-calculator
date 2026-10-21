@@ -14,14 +14,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.8"
+          channel: "stable"
+
       - name: Install Flet
         run: pip install "flet==1.0.4" "flet-cli==1.0.4"
+
+      - name: Verify Flutter setup
+        run: flutter --version && flutter doctor -v
 
       # Builds the app without Apple code signing. 3uTools signs it later
       # with your own Apple ID when you install it on the iPhone.
       - name: Build iOS app (no code signing)
+        env:
+          CI: "true"
         run: flet build ipa --verbose --flutter-build-args=--no-codesign
-        continue-on-error: true
 
       - name: Show what was built
         if: always()
