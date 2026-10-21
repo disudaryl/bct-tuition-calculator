@@ -10,7 +10,7 @@ MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
 # Standard rates used when "Configure Fee" is OFF  <-- edit if your notes differ
-STANDARD_LAB_FEE = 3429.30
+STANDARD_LAB_FEE = 2341.86
 STANDARD_HANDS_ON_FEE = 2341.86
 
 # Allowed number of lab / hands-on subjects (5 and above is not accepted)
@@ -37,9 +37,9 @@ APP_VERSION = "5.1"
 
 # ---------- ABOUT US: type your group members' names here ----------
 DEVELOPERS = [
-    "[Add your name]",
-    "[Add groupmate name]",
-    "[Add groupmate name]",
+    "Maylaine Criste",
+    "Daryl Disu",
+    "Arjie Ortal",
 ]
 AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
