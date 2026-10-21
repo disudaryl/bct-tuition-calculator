@@ -10,7 +10,7 @@ MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
 # Standard rates used when "Configure Fee" is OFF  <-- edit if your notes differ
-STANDARD_LAB_FEE = 2341.86
+STANDARD_LAB_FEE = 3429.30
 STANDARD_HANDS_ON_FEE = 2341.86
 
 # Allowed number of lab / hands-on subjects (5 and above is not accepted)
@@ -33,6 +33,15 @@ EXAMS = [
 # ---------- APP IDENTITY + COLORS TAKEN FROM THE BCT LOGO ----------
 APP_NAME = "BCT Tuition Calculator"
 SCHOOL_NAME = "Baguio College of Technology"
+APP_VERSION = "5.1"
+
+# ---------- ABOUT US: type your group members' names here ----------
+DEVELOPERS = [
+    "[Add your name]",
+    "[Add groupmate name]",
+    "[Add groupmate name]",
+]
+AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
 BCT_GOLD = "#F1D04B"
 
@@ -501,6 +510,25 @@ def build(page: ft.Page):
         min=0, max=100, divisions=20, value=DEFAULT_GLASS, on_change=on_glass
     )
 
+    about_section = ft.Column(
+        [
+            heading("About Us"),
+            ft.Text(f"{APP_NAME} v{APP_VERSION}", weight=ft.FontWeight.BOLD),
+            ft.Text(
+                SCHOOL_NAME,
+                size=12,
+                color=ft.Colors.ON_SURFACE_VARIANT,
+            ),
+            ft.Text("Developers", size=13, weight=ft.FontWeight.BOLD),
+            *[ft.Text(f"\u2022 {name}", size=13) for name in DEVELOPERS],
+            ft.Text(
+                f"\u2022 {AI_CO_DEVELOPER} \u2013 AI co-developer",
+                size=13,
+            ),
+        ],
+        spacing=4,
+    )
+
     settings_card = glass(
         ft.Column(
             [
@@ -528,6 +556,8 @@ def build(page: ft.Page):
                 ),
                 fee_info,
                 standard_note,
+                ft.Divider(),
+                about_section,
             ],
             spacing=12,
         )
