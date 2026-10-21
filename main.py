@@ -10,7 +10,7 @@ MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
 # Standard rates used when "Configure Fee" is OFF  <-- edit if your notes differ
-STANDARD_LAB_FEE = 3429.30
+STANDARD_LAB_FEE = 2341.86
 STANDARD_HANDS_ON_FEE = 2341.86
 
 # Allowed number of lab / hands-on subjects (5 and above is not accepted)
