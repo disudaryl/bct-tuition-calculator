@@ -1,5 +1,6 @@
 name: Build Android APK
 
+# Run it by hand: repo > Actions tab > "Build Android APK" > Run workflow
 on:
   workflow_dispatch:
 
@@ -21,7 +22,7 @@ jobs:
       - name: Install Flet
         run: pip install "flet==1.0.4" "flet-cli==1.0.4"
 
-      - name: Accept Android Licenses
+      - name: Accept Android licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
       - name: Build APK
