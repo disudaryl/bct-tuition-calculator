@@ -37,9 +37,9 @@ APP_VERSION = "5.2"
 
 # ---------- ABOUT US: type your group members' names here ----------
 DEVELOPERS = [
-    "[Add your name]",
-    "[Add groupmate name]",
-    "[Add groupmate name]",
+    "Daryl Disu",
+    "Maylaine Criste",
+    "Arjie Ortal",
 ]
 AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
