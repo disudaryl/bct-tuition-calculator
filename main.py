@@ -10,7 +10,7 @@ MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
 # Standard rates used when "Configure Fee" is OFF  <-- edit if your notes differ
-STANDARD_LAB_FEE = 2341.86
+STANDARD_LAB_FEE = 3429.30
 STANDARD_HANDS_ON_FEE = 2341.86
 
 # Allowed number of lab / hands-on subjects (5 and above is not accepted)
@@ -33,13 +33,13 @@ EXAMS = [
 # ---------- APP IDENTITY + COLORS TAKEN FROM THE BCT LOGO ----------
 APP_NAME = "BCT Tuition Calculator"
 SCHOOL_NAME = "Baguio College of Technology"
-APP_VERSION = "5.1"
+APP_VERSION = "5.2"
 
 # ---------- ABOUT US: type your group members' names here ----------
 DEVELOPERS = [
-    "Maylaine Criste",
-    "Daryl Disu",
-    "Arjie Ortal",
+    "[Add your name]",
+    "[Add groupmate name]",
+    "[Add groupmate name]",
 ]
 AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
@@ -167,6 +167,15 @@ def build(page: ft.Page):
             [
                 ft.Text(label, weight=weight, expand=True),
                 ft.Text(money(amount), weight=weight),
+            ]
+        )
+
+    def info_line(label, value):
+        return ft.Row(
+            [
+                ft.Text(label),
+                ft.Text(value, weight=ft.FontWeight.BOLD, expand=True,
+                        text_align=ft.TextAlign.RIGHT),
             ]
         )
 
@@ -348,6 +357,10 @@ def build(page: ft.Page):
     )
     down = field(f"Down payment (min {MIN_DOWN_PAYMENT})", str(MIN_DOWN_PAYMENT))
 
+    student_id = field("ID Number", "e.g. 2024-0001", numeric=False)
+    student_name = field("Name (Last, First, M.I.)", "e.g. Dela Cruz, Juan A.", numeric=False)
+    student_course = field("Course", "e.g. BSIT", numeric=False)
+
     error = ft.Text(color=ft.Colors.ERROR)
     results = ft.Column(spacing=6)
     results_card = glass(results)
@@ -362,6 +375,17 @@ def build(page: ft.Page):
         results.controls.clear()
         results_card.visible = False
         try:
+            # ----- student information (shown above the assessment) -----
+            id_text = " ".join((student_id.value or "").split())
+            name_text = " ".join((student_name.value or "").split())
+            course_text = " ".join((student_course.value or "").split())
+            if not id_text:
+                return fail("Please enter your ID number.")
+            if not name_text:
+                return fail("Please enter your name (Last, First, M.I.).")
+            if not course_text:
+                return fail("Please enter your course.")
+
             # ----- read the boxes (an empty box uses its placeholder default) -----
             units_text = (units.value or "").strip()
             if not units_text:
@@ -441,6 +465,11 @@ def build(page: ft.Page):
 
             results.controls.extend(
                 [
+                    heading("Student information"),
+                    info_line("ID Number", id_text),
+                    info_line("Name", name_text),
+                    info_line("Course", course_text),
+                    ft.Divider(),
                     heading("Assessment"),
                     line(f"Tuition ({unit_count} x {RATE_PER_UNIT})", tuition),
                     line("Miscellaneous fee", MISC_FEE),
@@ -623,6 +652,17 @@ def build(page: ft.Page):
                     header,
                     settings_card,
                     configure_card,
+                    glass(
+                        ft.Column(
+                            [
+                                heading("Student information"),
+                                student_id,
+                                student_name,
+                                student_course,
+                            ],
+                            spacing=12,
+                        )
+                    ),
                     glass(
                         ft.Column(
                             [
