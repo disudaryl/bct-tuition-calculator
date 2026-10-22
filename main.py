@@ -4,8 +4,8 @@ import traceback
 import flet as ft
 
 # ---------- FIXED FEE RULES ----------
-RATE_PER_UNIT = 487
-MISC_FEE = 3700
+RATE_PER_UNIT = 459.54
+MISC_FEE = 3739.98
 MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
