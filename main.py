@@ -4,8 +4,8 @@ import traceback
 import flet as ft
 
 # ---------- FIXED FEE RULES ----------
-RATE_PER_UNIT = 459.54
-MISC_FEE = 3739.98
+RATE_PER_UNIT = 487
+MISC_FEE = 3700
 MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
 
@@ -33,13 +33,13 @@ EXAMS = [
 # ---------- APP IDENTITY + COLORS TAKEN FROM THE BCT LOGO ----------
 APP_NAME = "BCT Tuition Calculator"
 SCHOOL_NAME = "Baguio College of Technology"
-APP_VERSION = "5.2"
+APP_VERSION = "5.3"
 
 # ---------- ABOUT US: type your group members' names here ----------
 DEVELOPERS = [
-    "Daryl Disu",
-    "Maylaine Criste",
-    "Arjie Ortal",
+    "[Add your name]",
+    "[Add groupmate name]",
+    "[Add groupmate name]",
 ]
 AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
@@ -140,6 +140,10 @@ def build(page: ft.Page):
 
     # ======================= small helpers =======================
     def glass(content):
+        # A Column inside a card stretches its children to the full card width,
+        # so text boxes fill the card in portrait AND landscape.
+        if type(content).__name__ == "Column":
+            content.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
         card = ft.Container(content=content, padding=20, border_radius=24)
         glass_cards.append(card)
         return card
@@ -532,7 +536,10 @@ def build(page: ft.Page):
         on_blur=on_custom,
     )
     custom_box = ft.Column(
-        [custom_top, custom_bottom, custom_image], spacing=12, visible=False
+        [custom_top, custom_bottom, custom_image],
+        spacing=12,
+        visible=False,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
     )
 
     glass_slider = ft.Slider(
@@ -640,6 +647,36 @@ def build(page: ft.Page):
         )
     )
 
+    info_card = glass(
+        ft.Column(
+            [
+                heading("Student information"),
+                student_id,
+                student_name,
+                student_course,
+            ],
+            spacing=12,
+        )
+    )
+    details_card = glass(
+        ft.Column(
+            [
+                heading("Student details"),
+                units,
+                lab,
+                hands_on,
+                down,
+                ft.Row([compute_button]),
+                error,
+            ],
+            spacing=12,
+        )
+    )
+    # phone upright: 1 column (full width); landscape / wider screens: 2 columns
+    info_card.col = {"xs": 12, "sm": 6}
+    details_card.col = {"xs": 12, "sm": 6}
+    student_row = ft.ResponsiveRow([info_card, details_card], spacing=16, run_spacing=16)
+
     content = ft.Container(
         left=0,
         top=0,
@@ -652,36 +689,13 @@ def build(page: ft.Page):
                     header,
                     settings_card,
                     configure_card,
-                    glass(
-                        ft.Column(
-                            [
-                                heading("Student information"),
-                                student_id,
-                                student_name,
-                                student_course,
-                            ],
-                            spacing=12,
-                        )
-                    ),
-                    glass(
-                        ft.Column(
-                            [
-                                heading("Student details"),
-                                units,
-                                lab,
-                                hands_on,
-                                down,
-                                ft.Row([compute_button]),
-                                error,
-                            ],
-                            spacing=12,
-                        )
-                    ),
+                    student_row,
                     results_card,
                     ft.Container(height=24),
                 ],
                 scroll=ft.ScrollMode.AUTO,
                 spacing=16,
+                horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
             )
         ),
     )
