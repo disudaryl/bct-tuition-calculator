@@ -8,6 +8,7 @@ RATE_PER_UNIT = 487
 MISC_FEE = 3700
 MIN_DOWN_PAYMENT = 3500
 MIN_UNITS, MAX_UNITS = 1, 25
+UNITS_DECIMALS = 2  # total units may have decimals, e.g. 23.5
 
 # Standard rates used when "Configure Fee" is OFF  <-- edit if your notes differ
 STANDARD_LAB_FEE = 3429.30
@@ -33,13 +34,13 @@ EXAMS = [
 # ---------- APP IDENTITY + COLORS TAKEN FROM THE BCT LOGO ----------
 APP_NAME = "BCT Tuition Calculator"
 SCHOOL_NAME = "Baguio College of Technology"
-APP_VERSION = "5.3"
+APP_VERSION = "5.4"
 
 # ---------- ABOUT US: type your group members' names here ----------
 DEVELOPERS = [
-    "Daryl Disu",
-    "Arjie Ortal",
-    "Maylaine Criste",
+    "[Add your name]",
+    "[Add groupmate name]",
+    "[Add groupmate name]",
 ]
 AI_CO_DEVELOPER = "Claude (AI assistant by Anthropic)"
 BCT_MAROON = "#8B1B12"
@@ -103,6 +104,23 @@ def to_float(text, default):
     if not math.isfinite(value):
         raise ValueError("not a finite number")
     return value
+
+
+def parse_units(text):
+    """Total units: a number such as 18 or 23.5 (up to UNITS_DECIMALS decimals).
+    Raises ValueError if it is not a valid finite number."""
+    value = float((text or "").strip())
+    if not math.isfinite(value):
+        raise ValueError("not a finite number")
+    scaled = value * 10 ** UNITS_DECIMALS
+    if abs(scaled - round(scaled)) > 1e-9:
+        raise ValueError("too many decimal places")
+    return round(value, UNITS_DECIMALS)
+
+
+def fmt_units(value):
+    """18.0 -> '18', 23.5 -> '23.5'."""
+    return f"{value:g}"
 
 
 def valid_hex(text):
@@ -351,7 +369,13 @@ def build(page: ft.Page):
     configure_card.visible = False
 
     # ======================= student inputs + results =======================
-    units = field(f"Total units enrolled ({MIN_UNITS}-{MAX_UNITS})", "e.g. 18")
+    # text keyboard on purpose: the phone's number pad has no decimal point,
+    # and units can be like 23.5
+    units = field(
+        f"Total units enrolled ({MIN_UNITS}-{MAX_UNITS}, decimals allowed)",
+        "e.g. 23.5",
+        numeric=False,
+    )
     lab = field(
         f"Number of subjects with LAB ({MIN_LAB_SUBJECTS}-{MAX_LAB_SUBJECTS})", "0"
     )
@@ -395,9 +419,12 @@ def build(page: ft.Page):
             if not units_text:
                 return fail("Please enter your total units.")
             try:
-                unit_count = int(units_text)
+                unit_count = parse_units(units_text)
             except ValueError:
-                return fail("Units must be a whole number, for example 18.")
+                return fail(
+                    f"Units must be a number such as 18 or 23.5 "
+                    f"(up to {UNITS_DECIMALS} decimals)."
+                )
             try:
                 lab_count = to_int(lab.value, 0)
                 hands_count = to_int(hands_on.value, 0)
@@ -418,7 +445,10 @@ def build(page: ft.Page):
             if lab_fee_rate < 0 or hands_fee_rate < 0:
                 return fail("Rates cannot be negative.")
             if not MIN_UNITS <= unit_count <= MAX_UNITS:
-                return fail(f"Units must be from {MIN_UNITS} to {MAX_UNITS}.")
+                return fail(
+                    f"Units must be from {MIN_UNITS} to {MAX_UNITS} "
+                    f"(decimals like 23.5 are allowed)."
+                )
             if not MIN_LAB_SUBJECTS <= lab_count <= MAX_LAB_SUBJECTS:
                 return fail(
                     f"Subjects with LAB must be from {MIN_LAB_SUBJECTS} to "
@@ -432,11 +462,11 @@ def build(page: ft.Page):
 
             # ----- unit balance -----
             subject_count = lab_count + hands_count
-            covered = unit_count // MIN_UNITS_PER_SUBJECT
+            covered = int(unit_count // MIN_UNITS_PER_SUBJECT)
             if subject_count > covered:
                 return fail(
                     f"Units don't balance: {lab_count} lab + {hands_count} hands-on = "
-                    f"{subject_count} subjects, but {unit_count} unit(s) cover only "
+                    f"{subject_count} subjects, but {fmt_units(unit_count)} unit(s) cover only "
                     f"{covered}. Each lab or hands-on subject needs at least "
                     f"{MIN_UNITS_PER_SUBJECT} unit."
                 )
@@ -475,7 +505,7 @@ def build(page: ft.Page):
                     info_line("Course", course_text),
                     ft.Divider(),
                     heading("Assessment"),
-                    line(f"Tuition ({unit_count} x {RATE_PER_UNIT})", tuition),
+                    line(f"Tuition ({fmt_units(unit_count)} x {RATE_PER_UNIT})", tuition),
                     line("Miscellaneous fee", MISC_FEE),
                     line(f"Laboratory fee ({lab_count} x {money(lab_fee_rate)})", lab_fee),
                     line(f"Hands-on fee ({hands_count} x {money(hands_fee_rate)})", hands_fee),
